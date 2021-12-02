@@ -1,14 +1,14 @@
-# Hyperswap Subgraph
+# SoulSwap Subgraph
 
-[Hyperswap](https://hyperswap.com/) is a decentralized protocol for automated token exchange on Binance Smart Chain.
+[SoulSwap](https://soulswap.com/) is a decentralized protocol for automated token exchange on Fantom Opera Smart Chain.
 
-This subgraph dynamically tracks any pair created by the hyperswap factory. It tracks of the current state of Hyperswap contracts, and contains derived stats for things like historical data and USD prices.
+This subgraph dynamically tracks any pair created by the soulswap factory. It tracks of the current state of SoulSwap contracts, and contains derived stats for things like historical data and USD prices.
 
 - aggregated data across pairs and tokens,
 - data on individual pairs and tokens,
 - data on transactions
 - data on liquidity providers
-- historical data on Hyperswap, pairs or tokens, aggregated by day
+- historical data on SoulSwap, pairs or tokens, aggregated by day
 
 ## Running Locally
 
@@ -16,13 +16,13 @@ Make sure to update package.json settings to point to your own graph account.
 
 ## Queries
 
-Below are a few ways to show how to query the hyperswap-subgraph for data. The queries show most of the information that is queryable, but there are many other filtering options that can be used, just check out the [querying api](https://thegraph.com/docs/graphql-api). These queries can be used locally or in The Graph Explorer playground.
+Below are a few ways to show how to query the soulswap-subgraph for data. The queries show most of the information that is queryable, but there are many other filtering options that can be used, just check out the [querying api](https://thegraph.com/docs/graphql-api). These queries can be used locally or in The Graph Explorer playground.
 
 ## Key Entity Overviews
 
-#### HyperswapFactory
+#### SoulSwapFactory
 
-Contains data across all of Hyperswap. This entity tracks important things like total liquidity (in ETH and USD, see below), all time volume, transaction count, number of pairs and more.
+Contains data across all of SoulSwap. This entity tracks important things like total liquidity (in ETH and USD, see below), all time volume, transaction count, number of pairs and more.
 
 #### Token
 
@@ -34,7 +34,7 @@ Contains data on a specific pair.
 
 #### Transaction
 
-Every transaction on Hyperswap is stored. Each transaction contains an array of mints, burns, and swaps that occured within it.
+Every transaction on SoulSwap is stored. Each transaction contains an array of mints, burns, and swaps that occured within it.
 
 #### Mint, Burn, Swap
 
@@ -42,13 +42,13 @@ These contain specifc information about a transaction. Things like which pair tr
 
 ## Example Queries
 
-### Querying Aggregated Hyperswap Data
+### Querying Aggregated SoulSwap Data
 
-This query fetches aggredated data from all hyperswap pairs and tokens, to give a view into how much activity is happening within the whole protocol.
+This query fetches aggredated data from all soulswap pairs and tokens, to give a view into how much activity is happening within the whole protocol.
 
 ```graphql
 {
-  hyperswapFactories(first: 1) {
+  soulswapFactories(first: 1) {
     pairCount
     totalVolumeUSD
     totalLiquidityUSD

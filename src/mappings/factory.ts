@@ -1,6 +1,6 @@
 /* eslint-disable prefer-const */
 import { log } from '@graphprotocol/graph-ts'
-import { HyperswapFactory, Pair, Token, Bundle } from '../types/schema'
+import { SoulSwapFactory, Pair, Token, Bundle } from '../types/schema'
 import { PairCreated } from '../types/Factory/Factory'
 import { Pair as PairTemplate } from '../types/templates'
 import {
@@ -15,9 +15,9 @@ import {
 
 export function handleNewPair(event: PairCreated): void {
   // load factory (create if first exchange)
-  let factory = HyperswapFactory.load(FACTORY_ADDRESS)
+  let factory = SoulSwapFactory.load(FACTORY_ADDRESS)
   if (factory == null) {
-    factory = new HyperswapFactory(FACTORY_ADDRESS)
+    factory = new SoulSwapFactory(FACTORY_ADDRESS)
     factory.pairCount = 0
     factory.totalVolumeFTM = ZERO_BD
     factory.totalLiquidityFTM = ZERO_BD

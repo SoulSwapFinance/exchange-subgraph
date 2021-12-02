@@ -1,39 +1,39 @@
 import { PairHourData } from './../types/schema'
 /* eslint-disable prefer-const */
 import { BigInt, BigDecimal, EthereumEvent } from '@graphprotocol/graph-ts'
-import { Pair, Bundle, Token, HyperswapFactory, HyperswapDayData, PairDayData, TokenDayData } from '../types/schema'
+import { Pair, Bundle, Token, SoulSwapFactory, SoulSwapDayData, PairDayData, TokenDayData } from '../types/schema'
 import { ONE_BI, ZERO_BD, ZERO_BI, FACTORY_ADDRESS } from './helpers'
 
 // max number of entities to store
 const maxTokenDayDatas = 10
 const maxPairDayDatas = 10
 
-export function updateHyperswapDayData(event: EthereumEvent): void {
-  let hyperswap = HyperswapFactory.load(FACTORY_ADDRESS)
+export function updateSoulSwapDayData(event: EthereumEvent): void {
+  let soulswap = SoulSwapFactory.load(FACTORY_ADDRESS)
   let timestamp = event.block.timestamp.toI32()
   let dayID = timestamp / 86400
   let dayStartTimestamp = dayID * 86400
-  let hyperswapDayData = HyperswapDayData.load(dayID.toString())
-  if (hyperswapDayData == null) {
-    let hyperswapDayData = new HyperswapDayData(dayID.toString())
-    hyperswapDayData.date = dayStartTimestamp
-    hyperswapDayData.dailyVolumeUSD = ZERO_BD
-    hyperswapDayData.dailyVolumeFTM = ZERO_BD
-    hyperswapDayData.totalVolumeUSD = ZERO_BD
-    hyperswapDayData.totalVolumeFTM = ZERO_BD
-    hyperswapDayData.dailyVolumeUntracked = ZERO_BD
-    hyperswapDayData.totalLiquidityUSD = ZERO_BD
-    hyperswapDayData.totalLiquidityFTM = ZERO_BD
-    hyperswapDayData.maxStored = maxTokenDayDatas
-    hyperswapDayData.mostLiquidTokens = hyperswap.mostLiquidTokens
-    hyperswapDayData.txCount = ZERO_BI
-    hyperswapDayData.save()
+  let soulswapDayData = SoulSwapDayData.load(dayID.toString())
+  if (soulswapDayData == null) {
+    let soulswapDayData = new SoulSwapDayData(dayID.toString())
+    soulswapDayData.date = dayStartTimestamp
+    soulswapDayData.dailyVolumeUSD = ZERO_BD
+    soulswapDayData.dailyVolumeFTM = ZERO_BD
+    soulswapDayData.totalVolumeUSD = ZERO_BD
+    soulswapDayData.totalVolumeFTM = ZERO_BD
+    soulswapDayData.dailyVolumeUntracked = ZERO_BD
+    soulswapDayData.totalLiquidityUSD = ZERO_BD
+    soulswapDayData.totalLiquidityFTM = ZERO_BD
+    soulswapDayData.maxStored = maxTokenDayDatas
+    soulswapDayData.mostLiquidTokens = soulswap.mostLiquidTokens
+    soulswapDayData.txCount = ZERO_BI
+    soulswapDayData.save()
   }
-  hyperswapDayData = HyperswapDayData.load(dayID.toString())
-  hyperswapDayData.totalLiquidityUSD = hyperswap.totalLiquidityUSD
-  hyperswapDayData.totalLiquidityFTM = hyperswap.totalLiquidityFTM
-  hyperswapDayData.txCount = hyperswap.txCount
-  hyperswapDayData.save()
+  soulswapDayData = SoulSwapDayData.load(dayID.toString())
+  soulswapDayData.totalLiquidityUSD = soulswap.totalLiquidityUSD
+  soulswapDayData.totalLiquidityFTM = soulswap.totalLiquidityFTM
+  soulswapDayData.txCount = soulswap.txCount
+  soulswapDayData.save()
 }
 
 export function updatePairDayData(event: EthereumEvent): void {

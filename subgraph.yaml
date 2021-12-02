@@ -1,5 +1,5 @@
 specVersion: 0.0.2
-description: Hyperswap is a decentralized protocol for automated token exchange on Binance Smart Chain.
+description: SoulSwap is a decentralized protocol for automated token exchange on Fantom Opera Smart Chain.
 repository: https://github.com/theothug/swap-subgraph
 schema:
   file: ./schema.graphql
@@ -8,9 +8,9 @@ dataSources:
     name: Factory
     network: fantom
     source:
-      address: '0x991152411A7B5A14A8CF0cDDE8439435328070dF'
+      address: '0x1120e150da9def6fe930f4feded18ef57c0ca7ef'
       abi: Factory
-      startBlock: 3812189
+      startBlock: 16108820
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3

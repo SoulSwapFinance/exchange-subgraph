@@ -1,4 +1,4 @@
-type HyperswapFactory @entity {
+type SoulSwapFactory @entity {
   # factory address
   id: ID!
 
@@ -204,8 +204,8 @@ type Bundle @entity {
   ftmPrice: BigDecimal! # price of FTM usd
 }
 
-# Data accumulated and condensed into day stats for all of Hyperswap
-type HyperswapDayData @entity {
+# Data accumulated and condensed into day stats for all of SoulSwap
+type SoulSwapDayData @entity {
   id: ID! # timestamp rounded to current day by dividing by 86400
   date: Int!
 

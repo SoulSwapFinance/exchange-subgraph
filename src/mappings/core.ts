@@ -4,9 +4,9 @@ import { BigInt, BigDecimal, store, Address } from '@graphprotocol/graph-ts'
 import {
   Pair,
   Token,
-  HyperswapFactory,
+  SoulSwapFactory,
   Transaction,
-  HyperswapDayData,
+  SoulSwapDayData,
   PairDayData,
   TokenDayData,
   Mint as MintEvent,
@@ -15,7 +15,7 @@ import {
   Bundle
 } from '../types/schema'
 import { Pair as PairContract, Mint, Burn, Swap, Transfer, Sync } from '../types/templates/Pair/Pair'
-import { updatePairDayData, updateTokenDayData, updateHyperswapDayData, updatePairHourData } from './dayUpdates'
+import { updatePairDayData, updateTokenDayData, updateSoulSwapDayData, updatePairHourData } from './dayUpdates'
 import { getFtmPriceInUSD, findFtmPerToken, getTrackedVolumeUSD, getTrackedLiquidityUSD } from './pricing'
 import {
   convertTokenToDecimal,
@@ -39,7 +39,7 @@ export function handleTransfer(event: Transfer): void {
     return
   }
 
-  let factory = HyperswapFactory.load(FACTORY_ADDRESS)
+  let factory = SoulSwapFactory.load(FACTORY_ADDRESS)
   let transactionHash = event.transaction.hash.toHexString()
 
   // user stats
@@ -201,10 +201,10 @@ export function handleSync(event: Sync): void {
   let pair = Pair.load(event.address.toHex())
   let token0 = Token.load(pair.token0)
   let token1 = Token.load(pair.token1)
-  let hyperswap = HyperswapFactory.load(FACTORY_ADDRESS)
+  let soulswap = SoulSwapFactory.load(FACTORY_ADDRESS)
 
   // reset factory liquidity by subtracting onluy tarcked liquidity
-  hyperswap.totalLiquidityFTM = hyperswap.totalLiquidityFTM.minus(pair.trackedReserveFTM as BigDecimal)
+  soulswap.totalLiquidityFTM = soulswap.totalLiquidityFTM.minus(pair.trackedReserveFTM as BigDecimal)
 
   // reset token total liquidity amounts
   token0.totalLiquidity = token0.totalLiquidity.minus(pair.reserve0)
@@ -252,8 +252,8 @@ export function handleSync(event: Sync): void {
   pair.reserveUSD = pair.reserveFTM.times(bundle.ftmPrice)
 
   // use tracked amounts globally
-  hyperswap.totalLiquidityFTM = hyperswap.totalLiquidityFTM.plus(trackedLiquidityFTM)
-  hyperswap.totalLiquidityUSD = hyperswap.totalLiquidityFTM.times(bundle.ftmPrice)
+  soulswap.totalLiquidityFTM = soulswap.totalLiquidityFTM.plus(trackedLiquidityFTM)
+  soulswap.totalLiquidityUSD = soulswap.totalLiquidityFTM.times(bundle.ftmPrice)
 
   // now correctly set liquidity amounts for each token
   token0.totalLiquidity = token0.totalLiquidity.plus(pair.reserve0)
@@ -261,7 +261,7 @@ export function handleSync(event: Sync): void {
 
   // save entities
   pair.save()
-  hyperswap.save()
+  soulswap.save()
   token0.save()
   token1.save()
 }
@@ -272,7 +272,7 @@ export function handleMint(event: Mint): void {
   let mint = MintEvent.load(mints[mints.length - 1])
 
   let pair = Pair.load(event.address.toHex())
-  let hyperswap = HyperswapFactory.load(FACTORY_ADDRESS)
+  let soulswap = SoulSwapFactory.load(FACTORY_ADDRESS)
 
   let token0 = Token.load(pair.token0)
   let token1 = Token.load(pair.token1)
@@ -294,13 +294,13 @@ export function handleMint(event: Mint): void {
 
   // update txn counts
   pair.txCount = pair.txCount.plus(ONE_BI)
-  hyperswap.txCount = hyperswap.txCount.plus(ONE_BI)
+  soulswap.txCount = soulswap.txCount.plus(ONE_BI)
 
   // save entities
   token0.save()
   token1.save()
   pair.save()
-  hyperswap.save()
+  soulswap.save()
 
   mint.sender = event.params.sender
   mint.amount0 = token0Amount as BigDecimal
@@ -316,7 +316,7 @@ export function handleMint(event: Mint): void {
   // update day entities
   updatePairDayData(event)
   updatePairHourData(event)
-  updateHyperswapDayData(event)
+  updateSoulSwapDayData(event)
   updateTokenDayData(token0 as Token, event)
   updateTokenDayData(token1 as Token, event)
 }
@@ -327,7 +327,7 @@ export function handleBurn(event: Burn): void {
   let burn = BurnEvent.load(burns[burns.length - 1])
 
   let pair = Pair.load(event.address.toHex())
-  let hyperswap = HyperswapFactory.load(FACTORY_ADDRESS)
+  let soulswap = SoulSwapFactory.load(FACTORY_ADDRESS)
 
   //update token info
   let token0 = Token.load(pair.token0)
@@ -347,14 +347,14 @@ export function handleBurn(event: Burn): void {
     .times(bundle.ftmPrice)
 
   // update txn counts
-  hyperswap.txCount = hyperswap.txCount.plus(ONE_BI)
+  soulswap.txCount = soulswap.txCount.plus(ONE_BI)
   pair.txCount = pair.txCount.plus(ONE_BI)
 
   // update global counter and save
   token0.save()
   token1.save()
   pair.save()
-  hyperswap.save()
+  soulswap.save()
 
   // update burn
   // burn.sender = event.params.sender
@@ -372,7 +372,7 @@ export function handleBurn(event: Burn): void {
   // update day entities
   updatePairDayData(event)
   updatePairHourData(event)
-  updateHyperswapDayData(event)
+  updateSoulSwapDayData(event)
   updateTokenDayData(token0 as Token, event)
   updateTokenDayData(token1 as Token, event)
 }
@@ -433,17 +433,17 @@ export function handleSwap(event: Swap): void {
   pair.save()
 
   // update global values, only used tracked amounts for volume
-  let hyperswap = HyperswapFactory.load(FACTORY_ADDRESS)
-  hyperswap.totalVolumeUSD = hyperswap.totalVolumeUSD.plus(trackedAmountUSD)
-  hyperswap.totalVolumeFTM = hyperswap.totalVolumeFTM.plus(trackedAmountFTM)
-  hyperswap.untrackedVolumeUSD = hyperswap.untrackedVolumeUSD.plus(derivedAmountUSD)
-  hyperswap.txCount = hyperswap.txCount.plus(ONE_BI)
+  let soulswap = SoulSwapFactory.load(FACTORY_ADDRESS)
+  soulswap.totalVolumeUSD = soulswap.totalVolumeUSD.plus(trackedAmountUSD)
+  soulswap.totalVolumeFTM = soulswap.totalVolumeFTM.plus(trackedAmountFTM)
+  soulswap.untrackedVolumeUSD = soulswap.untrackedVolumeUSD.plus(derivedAmountUSD)
+  soulswap.txCount = soulswap.txCount.plus(ONE_BI)
 
   // save entities
   pair.save()
   token0.save()
   token1.save()
-  hyperswap.save()
+  soulswap.save()
 
   let transaction = Transaction.load(event.transaction.hash.toHexString())
   if (transaction === null) {
@@ -485,7 +485,7 @@ export function handleSwap(event: Swap): void {
   // update day entities
   updatePairDayData(event)
   updatePairHourData(event)
-  updateHyperswapDayData(event)
+  updateSoulSwapDayData(event)
   updateTokenDayData(token0 as Token, event)
   updateTokenDayData(token1 as Token, event)
 
@@ -505,11 +505,11 @@ export function handleSwap(event: Swap): void {
     .concat(BigInt.fromI32(hourID).toString())
 
   // swap specific updating
-  let hyperswapDayData = HyperswapDayData.load(dayID.toString())
-  hyperswapDayData.dailyVolumeUSD = hyperswapDayData.dailyVolumeUSD.plus(trackedAmountUSD)
-  hyperswapDayData.dailyVolumeFTM = hyperswapDayData.dailyVolumeFTM.plus(trackedAmountFTM)
-  hyperswapDayData.dailyVolumeUntracked = hyperswapDayData.dailyVolumeUntracked.plus(derivedAmountUSD)
-  hyperswapDayData.save()
+  let soulswapDayData = SoulSwapDayData.load(dayID.toString())
+  soulswapDayData.dailyVolumeUSD = soulswapDayData.dailyVolumeUSD.plus(trackedAmountUSD)
+  soulswapDayData.dailyVolumeFTM = soulswapDayData.dailyVolumeFTM.plus(trackedAmountFTM)
+  soulswapDayData.dailyVolumeUntracked = soulswapDayData.dailyVolumeUntracked.plus(derivedAmountUSD)
+  soulswapDayData.save()
 
   // swap specific updating for pair
   let pairDayData = PairDayData.load(dayPairID)
