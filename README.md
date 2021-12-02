@@ -1,8 +1,8 @@
 # SoulSwap Subgraph
 
-[SoulSwap](https://soulswap.com/) is a decentralized protocol for automated token exchange on Fantom Opera Smart Chain.
+[SoulSwap](https://soulswap.finance/) is a decentralized protocol for automated token exchange on Fantom Opera Smart Chain.
 
-This subgraph dynamically tracks any pair created by the soulswap factory. It tracks of the current state of SoulSwap contracts, and contains derived stats for things like historical data and USD prices.
+This subgraph dynamically tracks any pair created by the SoulSwap factory. It tracks of the current state of SoulSwap contracts, and contains derived stats for things like historical data and USD prices.
 
 - aggregated data across pairs and tokens,
 - data on individual pairs and tokens,
@@ -41,6 +41,12 @@ Every transaction on SoulSwap is stored. Each transaction contains an array of m
 These contain specifc information about a transaction. Things like which pair triggered the transaction, amounts, sender, recipient, and more. Each is linked to a parent Transaction entity.
 
 ## Example Queries
+
+### Deployed Subgraph
+
+https://thegraph.com/hosted-service/subgraph/soulswapfinance/soulswap-exchange
+https://api.thegraph.com/subgraphs/name/soulswapfinance/soulswap-exchange
+
 
 ### Querying Aggregated SoulSwap Data
 
